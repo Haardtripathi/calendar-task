@@ -12,7 +12,11 @@ const userRoutes = require("./routes/userRoutes")
 
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+    origin: "http://localhost:3000", // Allow requests from localhost:3000
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
