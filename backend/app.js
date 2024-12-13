@@ -7,6 +7,8 @@ const app = express()
 const PORT = process.env.PORT || 3000;
 
 const authRoutes = require("./routes/authRoutes")
+const userRoutes = require("./routes/userRoutes")
+
 
 app.use(cors({
     origin: 'http://localhost:5173', // Allow only your frontend
@@ -25,6 +27,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use("/", authRoutes);
+app.use("/", userRoutes);
 
 sequelize.sync({ alter: true })
     .then(() => {

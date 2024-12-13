@@ -13,7 +13,7 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log(form.email, form.password);
+            // console.log(form.email, form.password);
             await login(form.email, form.password);
         } catch (error) {
             alert('Invalid credentials!');

@@ -23,6 +23,14 @@ function Navbar() {
                             Home
                         </Link>
                     </li>
+                    <li>
+                        <Link
+                            to="/events"
+                            className="text-white hover:text-gray-300 transition duration-200"
+                        >
+                            Events
+                        </Link>
+                    </li>
                     {!user ? (
                         <>
                             <li>

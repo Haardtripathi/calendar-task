@@ -37,19 +37,8 @@ module.exports.loginUser = async (req, res, next) => {
             return res.status(401).json({ message: "Invalid email or password" })
         }
         const token = jwt.sign({ userId: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ message: "User logged in successfully", token })
+        res.json({ message: "User logged in successfully", token, userId: user.id })
     } catch (error) {
         next(error)
     }
 }
-
-module.exports.authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-};
