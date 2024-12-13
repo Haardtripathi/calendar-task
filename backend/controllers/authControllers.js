@@ -26,9 +26,9 @@ module.exports.registerUser = async (req, res, next) => {
 module.exports.loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body
-        console.log(email, password)
+        // console.log(email, password)
         const user = await User.findOne({ where: { email: email } })
-        console.log(user)
+        // console.log(user)
         if (!user) {
             return res.status(401).json({ message: "User not found" })  // User not found in the database.
         }
