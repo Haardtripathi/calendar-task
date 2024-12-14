@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 
 const authRoutes = require("./routes/authRoutes")
 const userRoutes = require("./routes/userRoutes")
+const mysql = require("mysql2/promise"); // MySQL client for DB creation
+const User = require("./models/user"); // Import your models
 
 
 app.use(cors({
