@@ -13,7 +13,8 @@ const User = require("./models/user"); // Import your models
 
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow only your frontend
+    // origin: 'http://localhost:5173', // Allow only your frontend
+    origin: "https://calendar-task-1.onrender.com",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
