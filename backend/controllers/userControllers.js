@@ -15,6 +15,7 @@ module.exports.getUserId = async (req, res) => {
 module.exports.addEvent = async (req, res) => {
     try {
         const userId = req.user.userId;
+        console.log(userId);
         console.log(req.body);
 
         const newEvent = new Event({
