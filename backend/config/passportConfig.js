@@ -11,6 +11,8 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
+                console.log("GOOGLE CALLBACK URL:", process.env.GOOGLE_CALLBACK_URL);
+
                 const existingUser = await User.findOne({ where: { googleId: profile.id } });
                 if (existingUser) {
                     return done(null, existingUser);
