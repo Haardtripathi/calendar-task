@@ -7,11 +7,10 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                // Find or create user in database
                 const existingUser = await User.findOne({ where: { googleId: profile.id } });
                 if (existingUser) {
                     return done(null, existingUser);
@@ -29,6 +28,7 @@ passport.use(
         }
     )
 );
+
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
