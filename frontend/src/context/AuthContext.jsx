@@ -73,12 +73,38 @@ export const AuthProvider = ({ children }) => {
         console.log("User logged out.");
     };
 
+    const login = async (email, password) => {
+        try {
+            const response = await fetch("https://calendar-task-gauth.onrender.com/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Invalid credentials");
+            }
+
+            const data = await response.json();
+            const { token } = data;
+
+            // Save token and set user state
+            localStorage.setItem("token", token);
+            const payload = decodeJWT(token);
+            setUser({ userId: payload.userId, email: payload.email });
+        } catch (error) {
+            console.error("Login failed:", error.message);
+            throw error; // Propagate error to the form
+        }
+    };
+
+
     if (isAuthenticating) {
         return <div>Loading...</div>;
     }
 
     return (
-        <AuthContext.Provider value={{ user, logout }}>
+        <AuthContext.Provider value={{ user, logout, login }}>
             {children}
         </AuthContext.Provider>
     );
