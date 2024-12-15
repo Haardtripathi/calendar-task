@@ -9,10 +9,6 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const authController = require('../controllers/authControllers');
 router.post('/signup', authController.registerUser);
 router.post('/login', authController.loginUser);
-const express = require("express");
-const passport = require("passport");
-const router = express.Router();
-
 // Google OAuth route
 router.get(
     "/auth/google",
