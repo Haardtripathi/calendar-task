@@ -12,9 +12,6 @@ function Login() {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    const handleGoogleLogin = () => {
-        window.location.href = "http://localhost:3000/auth/google";
-    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -99,7 +96,7 @@ function Login() {
                                 )}
                             </button>
                             <button
-                                onClick={() => (window.location.href = "http://localhost:3000/auth/google")}
+                                onClick={() => (window.location.href = "https://calendar-task-demo1.onrender.com/auth/google")}
                                 className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                             >
                                 Login with Google
