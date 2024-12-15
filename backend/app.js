@@ -50,7 +50,7 @@ app.use("/", userRoutes);
 
 // Sync database
 sequelize
-    .sync({ alter: true })
+    .sync({ alter: true, force: true })
     .then(() => {
         console.log("Database synchronized");
         app.listen(PORT, () => {
