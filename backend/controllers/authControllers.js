@@ -7,6 +7,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 module.exports.registerUser = async (req, res, next) => {
     try {
         const { email, password } = req.body
+        console.log(email, password)
         const existingUser = await User.findOne({ where: { email: email } });
         if (existingUser) {
             return res.status(400).json({ message: "Email already exists." });
@@ -28,11 +29,12 @@ module.exports.loginUser = async (req, res, next) => {
         const { email, password } = req.body
         // console.log(email, password)
         const user = await User.findOne({ where: { email: email } })
-        // console.log(user)
+        console.log(user)
         if (!user) {
             return res.status(401).json({ message: "User not found" })  // User not found in the database.
         }
         const isPasswordValid = await bcrypt.compare(password, user.password)
+        console.log(password, user.password)
         if (!user || !isPasswordValid) {
             return res.status(401).json({ message: "Invalid email or password" })
         }
