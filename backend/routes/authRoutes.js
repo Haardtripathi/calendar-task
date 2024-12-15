@@ -9,21 +9,23 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const authController = require('../controllers/authControllers');
 router.post('/signup', authController.registerUser);
 router.post('/login', authController.loginUser);
-// Google OAuth routeconst handleAuth = (req, res, next) => {
-passport.authenticate('google', { session: false }, (err, user, info) => {
-    if (err) {
-        console.error('Authentication error:', err);
-        return res.redirect('https://calendar-task-demo1.onrender.com/login?error=auth_failed');
-    }
 
-    if (!user) {
-        console.error('No user found:', info);
-        return res.redirect('https://calendar-task-demo1.onrender.com/login?error=no_user');
-    }
+// Google OAuth Routesconst 
+handleAuth = (req, res, next) => {
+    passport.authenticate('google', { session: false }, (err, user, info) => {
+        if (err) {
+            console.error('Authentication error:', err);
+            return res.redirect('https://calendar-task-demo1.onrender.com/login?error=auth_failed');
+        }
 
-    req.user = user;
-    next();
-})(req, res, next);
+        if (!user) {
+            console.error('No user found:', info);
+            return res.redirect('https://calendar-task-demo1.onrender.com/login?error=no_user');
+        }
+
+        req.user = user;
+        next();
+    })(req, res, next);
 };
 
 // Update Google OAuth routes with error handling
@@ -59,4 +61,5 @@ router.get(
         }
     }
 );
+
 module.exports = router;
