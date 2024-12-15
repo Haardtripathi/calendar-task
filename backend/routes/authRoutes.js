@@ -38,7 +38,7 @@ router.get(
             console.log("Generated Token:", token);
 
             // Redirect to frontend with token
-            const redirectURL = `http://localhost:5173/?token=${token}`;
+            const redirectURL = `https://calendar-task-demo1.onrender.com/?token=${token}`;
             console.log("Redirecting to:", redirectURL);
             res.redirect(redirectURL);
         } catch (error) {
