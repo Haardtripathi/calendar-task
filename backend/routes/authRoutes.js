@@ -9,45 +9,40 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const authController = require('../controllers/authControllers');
 router.post('/signup', authController.registerUser);
 router.post('/login', authController.loginUser);
+const express = require("express");
+const passport = require("passport");
+const router = express.Router();
 
-// Google OAuth Routes
+// Google OAuth route
 router.get(
     "/auth/google",
+    (req, res, next) => {
+        console.log("Hit /auth/google"); // Debug log
+        next();
+    },
     passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
+// Google OAuth callback
 router.get(
     "/auth/google/callback",
+    (req, res, next) => {
+        console.log("Hit /auth/google/callback"); // Debug log
+        next();
+    },
     passport.authenticate("google", { session: false }),
-    async (req, res) => {
-        try {
-            const user = req.user;
+    (req, res) => {
+        console.log("Google Callback Success:", req.user);
 
-            if (!user) {
-                console.error("Google OAuth Error: User not authenticated.");
-                return res.status(401).send("User not authenticated.");
-            }
+        // Generate a JWT token and send to frontend
+        const token = jwt.sign(
+            { userId: req.user.id, email: req.user.email },
+            process.env.SECRET_KEY,
+            { expiresIn: "1h" }
+        );
 
-            // Generate JWT token
-            const token = jwt.sign(
-                { userId: user.id, email: user.email },
-                SECRET_KEY,
-                { expiresIn: process.env.JWT_EXPIRY || "1h" }
-            );
-
-            console.log("Generated Token:", token);
-
-            // Redirect to frontend with token
-            const redirectURL = `https://calendar-task-demo1.onrender.com/?token=${token}`;
-            console.log("Redirecting to:", redirectURL);
-            res.redirect(redirectURL);
-        } catch (error) {
-            console.error("Error in Google OAuth callback:", error);
-            res.status(500).send("Authentication failed.");
-        }
+        res.redirect(`https://calendar-task-demo1.onrender.com/?token=${token}`);
     }
 );
-
-
 
 module.exports = router;
