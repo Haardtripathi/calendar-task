@@ -17,10 +17,14 @@ app.use(
     session({
         secret: process.env.SECRET_KEY,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
+        cookie: {
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        }
     })
 );
-
 // Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
@@ -28,9 +32,13 @@ app.use(passport.session());
 // CORS configuration
 app.use(
     cors({
-        // origin: "http://localhost:5173", // Frontend origin
-        origin: ["https://calendar-task-demo1.onrender.com"],
-        credentials: true
+        origin: [
+            "https://calendar-task-demo1.onrender.com",
+            "https://calendar-task-gauth.onrender.com"
+        ],
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"]
     })
 );
 
@@ -42,6 +50,11 @@ app.use((req, res, next) => {
 // Middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
 
 // Routes
 app.use("/", authRoutes);

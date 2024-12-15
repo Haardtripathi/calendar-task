@@ -9,36 +9,54 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const authController = require('../controllers/authControllers');
 router.post('/signup', authController.registerUser);
 router.post('/login', authController.loginUser);
-// Google OAuth route
+// Google OAuth routeconst handleAuth = (req, res, next) => {
+passport.authenticate('google', { session: false }, (err, user, info) => {
+    if (err) {
+        console.error('Authentication error:', err);
+        return res.redirect('https://calendar-task-demo1.onrender.com/login?error=auth_failed');
+    }
+
+    if (!user) {
+        console.error('No user found:', info);
+        return res.redirect('https://calendar-task-demo1.onrender.com/login?error=no_user');
+    }
+
+    req.user = user;
+    next();
+})(req, res, next);
+};
+
+// Update Google OAuth routes with error handling
 router.get(
     "/auth/google",
     (req, res, next) => {
-        console.log("Hit /auth/google"); // Debug log
+        console.log("Initiating Google OAuth");
         next();
     },
-    passport.authenticate("google", { scope: ["profile", "email"] })
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        prompt: 'select_account'
+    })
 );
 
-// Google OAuth callback
 router.get(
     "/auth/google/callback",
-    (req, res, next) => {
-        console.log("Hit /auth/google/callback"); // Debug log
-        next();
-    },
-    passport.authenticate("google", { session: false }),
+    handleAuth,
     (req, res) => {
-        console.log("Google Callback Success:", req.user);
+        try {
+            console.log("Google callback successful, user:", req.user.id);
 
-        // Generate a JWT token and send to frontend
-        const token = jwt.sign(
-            { userId: req.user.id, email: req.user.email },
-            process.env.SECRET_KEY,
-            { expiresIn: "1h" }
-        );
+            const token = jwt.sign(
+                { userId: req.user.id, email: req.user.email },
+                process.env.SECRET_KEY,
+                { expiresIn: "1h" }
+            );
 
-        res.redirect(`https://calendar-task-demo1.onrender.com/?token=${token}`);
+            res.redirect(`https://calendar-task-demo1.onrender.com/auth-callback?token=${token}`);
+        } catch (error) {
+            console.error("Token generation error:", error);
+            res.redirect('https://calendar-task-demo1.onrender.com/login?error=token_failed');
+        }
     }
 );
-
 module.exports = router;
