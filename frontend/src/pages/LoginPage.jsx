@@ -12,7 +12,9 @@ function Login() {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
+    const handleGoogleLogin = () => {
+        window.location.href = "http://localhost:3000/auth/google";
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -96,6 +98,15 @@ function Login() {
                                     </>
                                 )}
                             </button>
+                            <button
+                                onClick={() => (window.location.href = "http://localhost:3000/auth/google")}
+                                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                            >
+                                Login with Google
+                            </button>
+
+
+
                         </form>
                     </div>
                     <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
