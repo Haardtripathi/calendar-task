@@ -1,40 +1,58 @@
-const express = require("express")
-const bodyParser = require("body-parser")
-const cors = require("cors")
-const sequelize = require("./config/config")
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const session = require("express-session");
+const passport = require("passport"); // Import passport
+require("./config/passportConfig"); // Import Google OAuth passport configuration
+const sequelize = require("./config/config");
 
-const app = express()
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-const authRoutes = require("./routes/authRoutes")
-const userRoutes = require("./routes/userRoutes")
-const mysql = require("mysql2/promise"); // MySQL client for DB creation
-const User = require("./models/user"); // Import your models
+// Session for Passport.js
+app.use(
+    session({
+        secret: process.env.SECRET_KEY,
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
+// Initialize Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(cors({
-    // origin: 'http://localhost:5173', // Allow only your frontend
-    origin: "https://calendar-task-1.onrender.com",
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-}));
-
+// CORS configuration
+app.use(
+    cors({
+        origin: "http://localhost:5173", // Frontend origin
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header("Access-Control-Allow-Credentials", "true");
     next();
 });
 
 // Middleware
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Routes
 app.use("/", authRoutes);
 app.use("/", userRoutes);
 
-sequelize.sync({ alter: true })
+// Sync database
+sequelize
+    .sync({ alter: true })
     .then(() => {
-        console.log("Database synchronized")
+        console.log("Database synchronized");
         app.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });

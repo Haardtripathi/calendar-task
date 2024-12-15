@@ -1,64 +1,87 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import React, { createContext, useState, useEffect } from 'react';
-import axios from '../axiosConfig';
+import React, { createContext, useState, useEffect } from "react";
 
-// Create AuthContext
 const AuthContext = createContext();
 
-// AuthProvider Component
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [isAuthenticating, setIsAuthenticating] = useState(true);
+
+    // Custom decode function for JWTs
+    const decodeJWT = (token) => {
+        try {
+            const payload = token.split(".")[1];
+            const decodedPayload = atob(payload); // Decode Base64
+            return JSON.parse(decodedPayload); // Parse JSON
+        } catch (error) {
+            console.error("Error decoding JWT:", error);
+            return null; // Return null on error
+        }
+    };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setUser(true);
-        } else {
-            delete axios.defaults.headers.common['Authorization'];
-            setUser(null);
-        }
+        const authenticateUser = () => {
+            try {
+                const currentUrl = window.location.href;
+                // console.log("Full URL on load:", currentUrl);
 
-        // Axios response interceptor
-        const interceptor = axios.interceptors.response.use(
-            (response) => response, // Pass through if the response is successful
-            (error) => {
-                if (error.response?.status === 401 || error.response?.status === 403) {
-                    console.error('Token expired or invalid. Logging out...');
-                    logout(); // Trigger logout if token is expired
+                const url = new URL(currentUrl);
+                const token = url.searchParams.get("token");
+                // console.log("Extracted Token:", token);
+
+                if (token) {
+                    // Save the token to localStorage
+                    localStorage.setItem("token", token);
+                    // console.log("Token saved to localStorage.");
+
+                    // Decode the token payload
+                    const payload = decodeJWT(token);
+                    // console.log("Decoded Payload:", payload);
+
+                    if (payload) {
+                        setUser({ userId: payload.userId, email: payload.email });
+                    }
+
+                    // Clean up the URL
+                    window.history.replaceState({}, document.title, "/");
+                } else {
+                    // Check for a saved token in localStorage
+                    const savedToken = localStorage.getItem("token");
+                    if (savedToken) {
+                        const payload = decodeJWT(savedToken);
+                        // console.log("Loaded user from localStorage:", payload);
+
+                        if (payload) {
+                            setUser({ userId: payload.userId, email: payload.email });
+                        }
+                    } else {
+                        console.log("No token found. User not authenticated.");
+                    }
                 }
-                return Promise.reject(error);
+            } catch (error) {
+                console.error("Error during authentication:", error);
+            } finally {
+                setIsAuthenticating(false);
             }
-        );
+        };
 
-        // Cleanup interceptor on component unmount
-        return () => axios.interceptors.response.eject(interceptor);
+        authenticateUser();
     }, []);
 
-    const login = async (email, password) => {
-        // console.log(email, password);
-        const response = await axios.post('/login', { email, password });
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userId', response.data.userId);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-        setUser(true);
-    };
-
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-
-        delete axios.defaults.headers.common['Authorization'];
+        localStorage.removeItem("token");
         setUser(null);
+        console.log("User logged out.");
     };
+
+    if (isAuthenticating) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-// Export AuthContext
 export default AuthContext;
