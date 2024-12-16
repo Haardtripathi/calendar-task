@@ -17,7 +17,7 @@ const EventPage = () => {
             setError(null);
             try {
                 const res = await axios.get('/events');
-                console.log('Fetched events:', res.data); // Log fetched data
+                console.log('Fetched events:', res.data);
                 const sortedEvents = res.data.sort((a, b) => new Date(a.date) - new Date(b.date));
                 setEvents(sortedEvents);
                 setFilteredEvents(sortedEvents);
@@ -148,7 +148,7 @@ const EventPage = () => {
                                                     <h3 className="text-lg font-semibold text-gray-900 mb-1">{event.title}</h3>
                                                     <p className="text-sm text-gray-600 mb-2">
                                                         <Clock className="inline-block mr-1" size={16} />
-                                                        {event.time}
+                                                        {event.startTime} - {event.endTime}
                                                     </p>
                                                     <p className="text-gray-700">{event.description}</p>
                                                 </div>
@@ -180,4 +180,3 @@ const EventPage = () => {
 };
 
 export default EventPage;
-

@@ -80,7 +80,7 @@ const HomePage = () => {
                                                 <span className="font-medium">Date:</span> {event.date}
                                             </p>
                                             <p className="text-gray-600">
-                                                <span className="font-medium">Time:</span> {event.time}
+                                                <span className="font-medium">Time:</span> {event.startTime} - {event.endTime}
                                             </p>
                                             <p className="text-gray-600 mt-2">
                                                 <span className="font-medium">Description:</span> {event.description}
