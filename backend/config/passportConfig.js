@@ -5,37 +5,40 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
 console.log("GOOGLE_CALLBACK_URL:", process.env.GOOGLE_CALLBACK_URL);
 try {
-    passport.use(
-        new GoogleStrategy(
-            {
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: process.env.GOOGLE_CALLBACK_URL
-            },
-            async (accessToken, refreshToken, profile, done) => {
-                console.log("Google Strategy callback triggered!"); // Add this log
 
-                try {
-                    const existingUser = await User.findOne({ where: { googleId: profile.id } });
-                    if (existingUser) {
-                        console.log("Existing user found:", existingUser);
-                        return done(null, existingUser);
-                    }
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/auth/google/callback"
+    },
+        async (accessToken, refreshToken, profile, done) => {
+            try {
+                // Check if user already exists
+                let user = await User.findOne({ where: { email: profile.emails[0].value } });
 
-                    const newUser = await User.create({
-                        googleId: profile.id,
+                if (user) {
+                    // User exists, update their Google-specific information
+                    user.googleId = profile.id;
+                    user.name = profile.displayName;
+                    await user.save();
+                } else {
+                    // Create new user
+                    user = await User.create({
                         email: profile.emails[0].value,
+                        name: profile.displayName,
+                        googleId: profile.id,
+                        // Set a random password or leave it null, depending on your User model
+                        password: Math.random().toString(36).slice(-8)
                     });
-
-                    console.log("New user created:", newUser);
-                    return done(null, newUser);
-                } catch (error) {
-                    console.error("Error in Google Strategy callback:", error);
-                    return done(error, null);
                 }
+
+                return done(null, user);
+            } catch (error) {
+                return done(error, null);
             }
-        )
-    );
+        }
+    ));
+
 } catch (err) {
     console.error("Error initializing GoogleStrategy:", err);
 }
