@@ -14,7 +14,7 @@ function Login() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
     const handleGoogleLogin = () => {
-        navigate("https://calendar-task-demo1.onrender.com/auth/google", { replace: true });
+        window.open("https://calendar-task-demo1.onrender.com/auth/google", "_self");
     };
 
     const handleSubmit = async (e) => {
