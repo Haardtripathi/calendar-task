@@ -3,8 +3,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport"); // Import passport
-require("./config/passportConfig"); // Import Google OAuth passport configuration
+
 const sequelize = require("./config/config");
+require("./config/passportConfig")
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -51,10 +52,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
-});
+
 
 // Routes
 app.use("/", authRoutes);
