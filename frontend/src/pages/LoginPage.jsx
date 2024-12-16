@@ -96,7 +96,7 @@ function Login() {
                                 )}
                             </button>
                             <button
-                                onClick={() => (window.location.href = "https://calendar-task-demo1.onrender.com/auth/google")}
+                                onClick={() => (window.location.href = "https://calendar-task-gauth.onrender.com/auth/google")}
                                 className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                             >
                                 Login with Google
