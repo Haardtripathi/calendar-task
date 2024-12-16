@@ -13,9 +13,23 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
 // Initialize Passport.js
 app.use(passport.initialize());
 app.use(passport.session());
+// Session for Passport.js
+app.use(
+    session({
+        secret: process.env.SECRET_KEY,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: true,
+            sameSite: 'none',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        }
+    })
+);
 
 // CORS configuration
 app.use(
