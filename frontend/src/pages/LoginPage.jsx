@@ -8,10 +8,15 @@ function Login() {
     const { login } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
+    const handleGoogleLogin = () => {
+        navigate("https://calendar-task-demo1.onrender.com/auth/google", { replace: true });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -96,7 +101,7 @@ function Login() {
                                 )}
                             </button>
                             <button
-                                onClick={() => (window.location.href = "https://calendar-task-demo1.onrender.com/auth/google")}
+                                onClick={handleGoogleLogin}
                                 className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                             >
                                 Login with Google
