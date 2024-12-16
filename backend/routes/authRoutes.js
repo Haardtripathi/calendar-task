@@ -13,8 +13,13 @@ router.post('/login', authController.loginUser);
 // Google OAuth Routes
 router.get(
     "/auth/google",
+    (req, res, next) => {
+        console.log("Google OAuth route hit! Initiating Google Strategy...");
+        next();
+    },
     passport.authenticate("google", { scope: ["profile", "email"] })
 );
+
 
 router.get(
     "/auth/google/callback",
